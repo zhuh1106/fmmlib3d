@@ -70,7 +70,7 @@ c
 c       
 c     set precision flag
 c
-        iprec=1
+        iprec=5
         call prinf('iprec=*',iprec,1)
 c       
 c     set source type flags and output flags

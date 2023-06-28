@@ -22,8 +22,8 @@ ifeq ($(HOST),macosx)
 
 OBJSUF=o
 MODSUF=mod
-FC=gfortran -c 
-FFLAGS=-O2
+FC=gfortran -c
+FFLAGS=-O2 -fallow-argument-mismatch -std=legacy
 FLINK=gfortran -o $(PROJECT)
 
 else
