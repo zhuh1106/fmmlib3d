@@ -1,6 +1,8 @@
 ! gfortran -c  -O2 -fallow-argument-mismatch -std=legacy test_l3dlocloc.f
 ! gfortran -o int2 test_l3dlocloc.o laprouts3d.o yrecursion.o l3dtrans.o prini.o rotviarecur3.o
 ! gfortran -o int2 test_l3dlocloc.o 
+!
+! find . -name '*.f' ! -type d -exec bash -c 'expand -t 4 "$0" > /tmp/e && mv /tmp/e "$0"' {} \;
       implicit None
       real *8 ztrg(3),source(3)
       real *8 c1(3),c2(3)
@@ -30,11 +32,11 @@ c     source position
       source(1)=c1(1)-0.47
       source(2)=c1(2)+0.51
       source(3)=c1(3)+0.49
-			charge(1) = 1.1d0
-			dipvec(1,1) = 0.31
-			dipvec(2,1) = 0.33
-			dipvec(3,1) = 0.43
-			ns = 1
+      charge(1) = 1.1d0
+      dipvec(1,1) = 0.31
+      dipvec(2,1) = 0.33
+      dipvec(3,1) = 0.43
+      ns = 1
 
 c     local exp center 2
       shift = 0.001
@@ -57,67 +59,67 @@ c
 c     direct calculation:
 c
       do i=1,nt
-				opots(i) = 0
-				oflds(1,i) = 0
-				oflds(2,i) = 0
-				oflds(3,i) = 0
-				ohesss(1,i) = 0
-				ohesss(2,i) = 0
-				ohesss(3,i) = 0
-				ohesss(4,i) = 0
-				ohesss(5,i) = 0
-				ohesss(6,i) = 0
+        opots(i) = 0
+        oflds(1,i) = 0
+        oflds(2,i) = 0
+        oflds(3,i) = 0
+        ohesss(1,i) = 0
+        ohesss(2,i) = 0
+        ohesss(3,i) = 0
+        ohesss(4,i) = 0
+        ohesss(5,i) = 0
+        ohesss(6,i) = 0
       enddo
-			
+            
       thresh = 1.0d-15
-			call lpotfld3dall_targ(0,source,charge,ns,ztrg,
-     1    	opots,oflds)
+      call lpotfld3dall_targ(0,source,charge,ns,ztrg,
+     1      opots,oflds)
 
 
 c     local exp order for center 1
       nterms1 = 39
 c     local exp order for center 2
       nterms2 = 7
-			
-			ier = 0
-			allocate(locexp1(0:nterms1,-nterms1:nterms1))
-			locexp1 = 0.0d0
-			call l3dformta(ier,rscale1,source,charge,ns,c1,
-     1		           nterms1,locexp1)
-			
-		  ! print *, "local expansion: ", locexp1(1,:)
-		  
+            
+      ier = 0
+      allocate(locexp1(0:nterms1,-nterms1:nterms1))
+      locexp1 = 0.0d0
+      call l3dformta(ier,rscale1,source,charge,ns,c1,
+     1                 nterms1,locexp1)
+            
+      ! print *, "local expansion: ", locexp1(1,:)
+          
       call l3dtaeval(rscale1,c1,locexp1,nterms1,
-     1		ztrg,pots,0,flds,ier)	
-			
-			print *,"local exp1 eval error:"
+     1      ztrg,pots,0,flds,ier)   
+            
+      print *,"local exp1 eval error:"
       call errprinth2(nt,pots,opots,flds,oflds,hesss,ohesss,
      1   err_out)
 
 cc    shift local exp from center 1 to center 2
       allocate(locexp2(0:nterms2,-nterms2:nterms2))
-			locexp2 = 0.0d0
-			call l3dloclocquadu(rscale1,c1,locexp1,nterms1,
+      locexp2 = 0.0d0
+      call l3dloclocquadu(rscale1,c1,locexp1,nterms1,
      1           rscale2,c2,locexp2,nterms2,ier)
-		  
+          
       do i=1,nt
-				pots(i) = 0
-				flds(1,i) = 0
-				flds(2,i) = 0
-				flds(3,i) = 0
-				hesss(1,i) = 0
-				hesss(2,i) = 0
-				hesss(3,i) = 0
-				hesss(4,i) = 0
-				hesss(5,i) = 0
-				hesss(6,i) = 0
+        pots(i) = 0
+        flds(1,i) = 0
+        flds(2,i) = 0
+        flds(3,i) = 0
+        hesss(1,i) = 0
+        hesss(2,i) = 0
+        hesss(3,i) = 0
+        hesss(4,i) = 0
+        hesss(5,i) = 0
+        hesss(6,i) = 0
       enddo
 
-			call l3dtaeval(rscale2,c2,locexp2,nterms2,ztrg,
-     1		pots,0,flds,ier)	
-		  
-		  print *,"local exp2 eval error:"
-			call errprinth2(nt,pots,opots,flds,oflds,hesss,ohesss,
+      call l3dtaeval(rscale2,c2,locexp2,nterms2,ztrg,
+     1      pots,0,flds,ier)    
+          
+      print *,"local exp2 eval error:"
+      call errprinth2(nt,pots,opots,flds,oflds,hesss,ohesss,
      1   err_out)
 
       end
@@ -138,18 +140,18 @@ c
       dddh = 0
 
       do i=1,nt
-				errp = errp + abs(pot(i)-opot(i))**2
-				dddp = dddp + abs(opot(i))**2
+        errp = errp + abs(pot(i)-opot(i))**2
+        dddp = dddp + abs(opot(i))**2
       enddo
 
 c
 
       errs(1) = sqrt(errp/dddp)
-			errs(2) = 0
-			errs(3) = 0
+      errs(2) = 0
+      errs(3) = 0
       write(*,'(a,e11.4,a,e11.4,a,e11.4)') 
      1     'pot error=',errs(1),'   grad error=',errs(2),
      2     '   hess error=',errs(3)   
       return
       end
-c			
+c           

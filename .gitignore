@@ -4,3 +4,5 @@ fort.*
 *~
 octave-core
 int2
+.DS_Store
+examples/int2-test-l3dlocloc
